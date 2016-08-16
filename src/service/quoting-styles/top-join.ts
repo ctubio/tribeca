@@ -80,8 +80,8 @@ function computeTopJoinQuote(filteredMkt: Models.Market, fv: Models.FairValue, p
     var minAsk = fv.price + params.width / 2.0;
     genQt.askPx = Math.max(minAsk, genQt.askPx);
 
-    genQt.bidSz = params.size;
-    genQt.askSz = params.size;
+    genQt.bidSz = params.buySize;
+    genQt.askSz = params.sellSize;
 
     return genQt;
 }
@@ -105,13 +105,12 @@ function computeInverseJoinQuote(filteredMkt: Models.Market, fv: Models.FairValu
         genQt.bidPx -= params.width / 4.0;
     }
 
-    genQt.bidSz = params.size;
-    genQt.askSz = params.size;
+    genQt.bidSz = params.buySize;
+    genQt.askSz = params.sellSize;
 
     return genQt;
 }
 
-//computePingPongQuote is same as computeTopJoinQuote but need to use params.mode === Models.QuotingMode.PingPong
 function computePingPongQuote(filteredMkt: Models.Market, fv: Models.FairValue, params: Models.QuotingParameters) {
     var genQt = getQuoteAtTopOfMarket(filteredMkt, params);
 
@@ -129,13 +128,12 @@ function computePingPongQuote(filteredMkt: Models.Market, fv: Models.FairValue, 
     var minAsk = fv.price + params.width / 8.0;
     genQt.askPx = Math.max(minAsk, genQt.askPx);
 
-    genQt.bidSz = params.size;
-    genQt.askSz = params.size;
+    genQt.bidSz = params.buySize;
+    genQt.askSz = params.sellSize;
 
     return genQt;
 }
 
-//computeBoomerangQuote is same as computeTopJoinQuote but need to use params.mode === Models.QuotingMode.PingPong
 function computeBoomerangQuote(filteredMkt: Models.Market, fv: Models.FairValue, params: Models.QuotingParameters) {
     var genQt = getQuoteAtTopOfMarket(filteredMkt, params);
 
@@ -153,8 +151,8 @@ function computeBoomerangQuote(filteredMkt: Models.Market, fv: Models.FairValue,
     var minAsk = fv.price + params.width / 8.0;
     genQt.askPx = Math.max(minAsk, genQt.askPx);
 
-    genQt.bidSz = params.size;
-    genQt.askSz = params.size;
+    genQt.bidSz = params.buySize;
+    genQt.askSz = params.sellSize;
 
     return genQt;
 }

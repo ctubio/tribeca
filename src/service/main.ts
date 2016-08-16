@@ -114,8 +114,7 @@ function ParseCurrencyPair(raw: string) : Models.CurrencyPair {
 var pair = ParseCurrencyPair(config.GetString("TradedPair"));
 
 var defaultActive : Models.SerializedQuotesActive = new Models.SerializedQuotesActive(false, moment.unix(1));
-var defaultQuotingParameters : Models.QuotingParameters = new Models.QuotingParameters(1, 1, Models.QuotingMode.Top,
-    Models.FairValueModel.BBO, 2, 2, true, Models.AutoPositionMode.EwmaBasic, false, 2.5, 84, .095, 2*.095, .095, 3, .1);
+var defaultQuotingParameters : Models.QuotingParameters = new Models.QuotingParameters(2, 0.02, 0.01, Models.QuotingMode.Boomerang, Models.FairValueModel.BBO, 1, 0.9, true, Models.AutoPositionMode.EwmaBasic, false, 0.9, 569, false, .095, 2*.095, .095, 3, .1);
 
 var backTestSimulationSetup = (inputData : Array<Models.Market | Models.MarketTrade>, parameters : Backtest.BacktestParameters) => {
     var timeProvider : Utils.ITimeProvider = new Backtest.BacktestTimeProvider(_.first(inputData).time, _.last(inputData).time);
@@ -214,7 +213,8 @@ var liveTradingSetup = () => {
 
     var getPersister = <T>(collectionName: string) : Persister.ILoadAll<T> => {
         var ls = collectionName === "mt" ? mtLoaderSaver : loaderSaver;
-        return new Persister.Persister<T>(db, collectionName, exchange, pair, ls.loader, ls.saver);
+        var setDBFlag = (collectionName === "trades");
+        return new Persister.Persister<T>(db, collectionName, exchange, pair, setDBFlag, ls.loader, ls.saver);
     };
 
     var getRepository = <T>(defValue: T, collectionName: string) : Persister.ILoadLatest<T> =>
@@ -314,6 +314,8 @@ var runTradingSystem = (classes: SimulationClasses) : Q.Promise<boolean> => {
         var submitOrderReceiver = getReceiver(Messaging.Topics.SubmitNewOrder);
         var cancelOrderReceiver = getReceiver(Messaging.Topics.CancelOrder);
         var cancelAllOrdersReceiver = getReceiver(Messaging.Topics.CancelAllOrders);
+        var cleanAllClosedOrdersReceiver = getReceiver(Messaging.Topics.CleanAllClosedOrders);
+        var cleanAllOrdersReceiver = getReceiver(Messaging.Topics.CleanAllOrders);
 
         var gateway = classes.getExch(orderCache);
 
@@ -325,7 +327,7 @@ var runTradingSystem = (classes: SimulationClasses) : Q.Promise<boolean> => {
 
         var broker = new Broker.ExchangeBroker(pair, gateway.md, gateway.base, gateway.oe, connectivity);
         var orderBroker = new Broker.OrderBroker(timeProvider, paramsRepo, broker, gateway.oe, orderPersister, tradesPersister, orderStatusPublisher,
-            tradePublisher, submitOrderReceiver, cancelOrderReceiver, cancelAllOrdersReceiver, messages, orderCache, initOrders, initTrades);
+            tradePublisher, submitOrderReceiver, cancelOrderReceiver, cancelAllOrdersReceiver, cleanAllClosedOrdersReceiver, cleanAllOrdersReceiver, messages, orderCache, initOrders, initTrades);
         var marketDataBroker = new Broker.MarketDataBroker(gateway.md, marketDataPublisher, marketDataPersister, messages);
         var positionBroker = new Broker.PositionBroker(timeProvider, broker, gateway.pg, positionPublisher, positionPersister, marketDataBroker);
 
@@ -416,7 +418,8 @@ var runTradingSystem = (classes: SimulationClasses) : Q.Promise<boolean> => {
             var delta = process.hrtime(start);
             var ms = (delta[0] * 1e9 + delta[1]) / 1e6;
             var n = ms - interval;
-            ////if (n > 25) mainLog.info("Event looped blocked for " + Utils.roundFloat(n) + "ms");
+            if (n > 25)
+                mainLog.info("Event looped blocked for " + Utils.roundFloat(n) + "ms");
             start = process.hrtime();
         }, interval).unref();
 

@@ -250,9 +250,10 @@ export class Trade implements ITimestamped {
                 public side: Side,
                 public value: number,
                 public liquidity: Liquidity,
-                public alloc: number,
-                public allocprice: number,
-                public feeCharged: number) {}
+                public Kqty: number,
+                public Kprice: number,
+                public feeCharged: number,
+                public loadedFromDB: boolean) {}
 }
 
 export class CurrencyPosition {
@@ -340,7 +341,8 @@ export enum AutoPositionMode { Off, EwmaBasic }
 
 export class QuotingParameters {
     constructor(public width: number,
-                public size: number,
+                public buySize: number,
+                public sellSize: number,
                 public mode: QuotingMode,
                 public fvModel: FairValueModel,
                 public targetBasePosition: number,
@@ -350,6 +352,7 @@ export class QuotingParameters {
                 public aggressivePositionRebalancing: boolean,
                 public tradesPerMinute: number,
                 public tradeRateSeconds: number,
+                public audio: boolean,
                 public longEwma: number,
                 public shortEwma: number,
                 public quotingEwma: number,
@@ -395,5 +398,13 @@ export class TargetBasePositionValue {
 }
 
 export class CancelAllOrdersRequest {
+    constructor() {}
+}
+
+export class CleanAllClosedOrdersRequest {
+    constructor() {}
+}
+
+export class CleanAllOrdersRequest {
     constructor() {}
 }

@@ -540,7 +540,7 @@ class CoinbaseOrderEntryGateway implements Interfaces.IOrderEntryGateway {
             var t = this._timeProvider.utcNow();
 
             if (ack == null || typeof ack.id === "undefined") {
-                this._log.warn("NO EXCHANGE ID PROVIDED FOR ORDER ID:", order.orderId, err, ack);
+                this._log.warn("WARNING FROM GATEWAY:", order.orderId, err, ack);
             }
 
             var msg = null;
@@ -796,8 +796,8 @@ function GetCurrencyEnum(name: string): Models.Currency {
         case "USD": return Models.Currency.USD;
         case "EUR": return Models.Currency.EUR;
         case "GBP": return Models.Currency.GBP;
-        case "ETH": return Models.Currency.GBP;
         case "CAD": return Models.Currency.CAD;
+        case "ETH": return Models.Currency.ETH;
         default: throw new Error("Unsupported currency " + name);
     }
 }

@@ -22,7 +22,7 @@ class Repository<T> implements Interfaces.IRepository<T> {
         defaultParameter: T,
         private _rec: Messaging.IReceive<T>,
         private _pub: Messaging.IPublish<T>) {
-            
+
         this._log.info("Starting parameter:", defaultParameter);
         _pub.registerSnapshot(() => [this.latest]);
         _rec.registerReceiver(this.updateParameters);
@@ -50,7 +50,7 @@ export class QuotingParametersRepository extends Repository<Models.QuotingParame
         rec: Messaging.IReceive<Models.QuotingParameters>,
         initParam: Models.QuotingParameters) {
         super("qpr",
-            (p: Models.QuotingParameters) => p.size > 0 || p.width > 0,
+            (p: Models.QuotingParameters) => p.buySize > 0 || p.sellSize > 0 || p.width > 0,
             (a: Models.QuotingParameters, b: Models.QuotingParameters) => !_.isEqual(a, b),
             initParam, rec, pub);
 
