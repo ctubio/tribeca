@@ -7,7 +7,10 @@ RUN git clone https://github.com/michaelgrosner/tribeca.git
 
 WORKDIR tribeca
 
-RUN npm install -g grunt-cli typings forever
+# Chose the branch you want to build. Leave as it is if you want to build the master branch (recommanded).
+# RUN git checkout -B YOUR-NAME-OF-THE-BRANCH --track remotes/origin/NAME-OF-THE-BRANCH-IN-GITHUB
+
+RUN npm install -g grunt-cli typings@0.8.1 forever
 RUN npm install
 RUN typings install
 RUN grunt compile
@@ -26,7 +29,7 @@ ENV MongoDbUrl mongodb://tribeca-mongo:27017/tribeca
 
 # DEV
 ## HitBtc
-ENV HitBtcPullUrl http://demo-api.hitbtc.com 
+ENV HitBtcPullUrl http://demo-api.hitbtc.com
 ENV HitBtcOrderEntryUrl ws://demo-api.hitbtc.com:8080
 ENV HitBtcMarketDataUrl ws://demo-api.hitbtc.com:80
 ENV HitBtcSocketIoUrl https://demo-api.hitbtc.com:8081
@@ -34,8 +37,9 @@ ENV HitBtcApiKey NULL
 ENV HitBtcSecret NULL
 ENV HitBtcOrderDestination HitBtc
 ## Coinbase
-ENV CoinbaseRestUrl https://api-public.sandbox.exchange.coinbase.com
-ENV CoinbaseWebsocketUrl https://ws-feed-public.sandbox.exchange.coinbase.com
+## Use GDAX keys
+ENV CoinbaseRestUrl https://api-public.sandbox.gdax.com
+ENV CoinbaseWebsocketUrl wss://ws-feed-public.sandbox.gdax.com
 ENV CoinbasePassphrase NULL
 ENV CoinbaseApiKey NULL
 ENV CoinbaseSecret NULL
@@ -54,13 +58,13 @@ ENV BitfinexOrderDestination Bitfinex
 
 # PROD - values provided for reference.
 ## HitBtc
-#ENV HitBtcPullUrl http://api.hitbtc.com 
+#ENV HitBtcPullUrl http://api.hitbtc.com
 #ENV HitBtcOrderEntryUrl wss://api.hitbtc.com:8080
 #ENV HitBtcMarketDataUrl ws://api.hitbtc.com:80
 #ENV HitBtcSocketIoUrl https://api.hitbtc.com:8081
 ## Coinbase
-#ENV CoinbaseRestUrl https://api.exchange.coinbase.com
-#ENV CoinbaseWebsocketUrl wss://ws-feed.exchange.coinbase.com
+#ENV CoinbaseRestUrl https://api.gdax.com
+#ENV CoinbaseWebsocketUrl wss://ws-feed.gdax.com
 
 WORKDIR tribeca/service
 CMD ["forever", "main.js"]

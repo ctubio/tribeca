@@ -96,7 +96,7 @@ var OrderListController = ($scope: OrderListScope,
         rowHeight: 20,
         headerRowHeight: 20,
         columnDefs: [
-            { width: 120, field: 'time', displayName: 'time', cellFilter: "momentFullDate", 
+            { width: 120, field: 'time', displayName: 'time', cellFilter: "momentFullDate",
                 sortingAlgorithm: (a: moment.Moment, b: moment.Moment) => a.diff(b),
                 sort: { direction: uiGridConstants.DESC, priority: 1} },
             { width: 90, field: 'orderId', displayName: 'id' },
@@ -119,24 +119,22 @@ var OrderListController = ($scope: OrderListScope,
         ]
     };
 
-    var idsToIndex = {};
     var addOrderRpt = (o: Models.OrderStatusReport) => {
-        var idx = idsToIndex[o.orderId];
-        if (typeof idx === "undefined") {
-            idsToIndex[o.orderId] = $scope.order_statuses.length;
-            $scope.order_statuses.push(new DisplayOrderStatusReport(o, fireCxl));
-        }
-        else {
-            var existing = $scope.order_statuses[idx];
-            if (existing.version < o.version) {
-                existing.updateWith(o);
-            }
-        }
+        var idx = -1;
+        for(var i=0;i<$scope.order_statuses.length;i++)
+          if ($scope.order_statuses[i].orderId==o.orderId) {idx=i; break;}
+        if (idx!=-1) {
+            if (o.orderStatus<2) {
+              var existing = $scope.order_statuses[idx];
+              if (existing.version < o.version)
+                  existing.updateWith(o);
+            } else $scope.order_statuses.splice(idx,1);
+        } else if (o.orderStatus<2)
+          $scope.order_statuses.push(new DisplayOrderStatusReport(o, fireCxl));
     };
 
     var clear = () => {
         $scope.order_statuses.length = 0;
-        idsToIndex = {};
     };
 
     var sub = subscriberFactory.getSubscriber($scope, Messaging.Topics.OrderStatusReports)
