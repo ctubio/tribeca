@@ -1,5 +1,5 @@
 /// <reference path="../utils.ts" />
-/// <reference path="../../common/models.ts" />
+/// <reference path="../../share/models.ts" />
 /// <reference path="nullgw.ts" />
 ///<reference path="../interfaces.ts"/>
 
@@ -11,7 +11,7 @@ import url = require("url");
 import querystring = require("querystring");
 import Config = require("../config");
 import NullGateway = require("./nullgw");
-import Models = require("../../common/models");
+import Models = require("../../share/models");
 import Utils = require("../utils");
 import util = require("util");
 import Interfaces = require("../interfaces");
