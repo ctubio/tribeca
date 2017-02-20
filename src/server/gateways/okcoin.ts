@@ -19,6 +19,7 @@ interface OkCoinMessageIncomingMessage {
     success : string;
     data : any;
     event? : string;
+    errorcode : string;
     order_id : string;
 }
 
@@ -70,7 +71,7 @@ interface OkCoinTradeRecord {
 interface SubscriptionRequest extends SignedMessage { }
 
 class OkCoinWebsocket {
-    send = <T>(channel : string, parameters: any) => {
+  send = <T>(channel : string, parameters: any) => {
         var subsReq : any = {event: 'addChannel', channel: channel};
 
         if (parameters !== null)
@@ -253,7 +254,7 @@ class OkCoinOrderEntryGateway implements Interfaces.IOrderEntryGateway {
 
         if (ts.data.result === "true") {
             osr.orderStatus = Models.OrderStatus.Cancelled;
-
+            osr.done = true;
         }
         else {
             osr.orderStatus = Models.OrderStatus.Rejected;
@@ -391,6 +392,15 @@ class OkCoinHttp {
 
 class OkCoinPositionGateway implements Interfaces.IPositionGateway {
     PositionUpdate = new Utils.Evt<Models.CurrencyPosition>();
+
+    private static convertCurrency(name : string) : Models.Currency {
+        switch (name.toLowerCase()) {
+            case "usd": return Models.Currency.USD;
+            case "ltc": return Models.Currency.LTC;
+            case "btc": return Models.Currency.BTC;
+            case "cny": return Models.Currency.CNY;
+            default: throw new Error("Unsupported currency " + name);
+        }
     }
 
     private trigger = () => {
@@ -450,7 +460,7 @@ class OkCoinBaseGateway implements Interfaces.IExchangeDetailsGateway {
 }
 
 function GetCurrencyEnum(c: string) : Models.Currency {
-    switch (c) {
+    switch (c.toLowerCase()) {
         case "usd": return Models.Currency.USD;
         case "ltc": return Models.Currency.LTC;
         case "btc": return Models.Currency.BTC;
