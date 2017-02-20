@@ -459,7 +459,7 @@ class OkCoinBaseGateway implements Interfaces.IExchangeDetailsGateway {
 }
 
 function GetCurrencyEnum(c: string) : Models.Currency {
-    switch (c.toLowerCase()) {
+    switch (c) {
         case "usd": return Models.Currency.USD;
         case "ltc": return Models.Currency.LTC;
         case "btc": return Models.Currency.BTC;
