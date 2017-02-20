@@ -391,15 +391,6 @@ class OkCoinHttp {
 
 class OkCoinPositionGateway implements Interfaces.IPositionGateway {
     PositionUpdate = new Utils.Evt<Models.CurrencyPosition>();
-
-    private static convertCurrency(name : string) : Models.Currency {
-        switch (name.toLowerCase()) {
-            case "usd": return Models.Currency.USD;
-            case "ltc": return Models.Currency.LTC;
-            case "btc": return Models.Currency.BTC;
-            case "cny": return Models.Currency.CNY;
-            default: throw new Error("Unsupported currency " + name);
-        }
     }
 
     private trigger = () => {
