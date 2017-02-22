@@ -14,6 +14,11 @@ import moment = require("moment");
 import _ = require("lodash");
 var shortId = require("shortid");
 
+function sleep( ms ) {
+  let start = Date.now();
+  while ( Date.now() < start + ms ) {} 
+}
+
 interface OkCoinMessageIncomingMessage {
     channel : string;
     success : string;
@@ -95,8 +100,7 @@ class OkCoinWebsocket {
             }
             if (typeof msg.success !== "undefined") {
                  if (msg.success !== "true")
-                    var waitTill = new Date(new Date().getTime() + 5 * 1000);
-                    while(waitTill > new Date()){}
+                    sleep( 5000 );
                     this._log.warn("Unsuccessful message", msg);
                 else
                     this._log.info("Successfully connected to %s", msg.channel);
