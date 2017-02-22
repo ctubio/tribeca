@@ -100,12 +100,14 @@ class OkCoinWebsocket {
             }
             if (typeof msg.success !== "undefined") {
                  if (msg.success !== "true")
-                    sleep( 5000 );
                     this._log.warn("Unsuccessful message", msg);
+                    sleep( 3000 );
+                    this._log.warn("waited")
                 else
                     this._log.info("Successfully connected to %s", msg.channel);
                 return;   
             }
+
             var handler = this._handlers[msg.channel];
 
             if (typeof handler === "undefined") {
