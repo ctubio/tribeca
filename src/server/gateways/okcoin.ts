@@ -94,7 +94,7 @@ class OkCoinWebsocket {
                 return;
             }
             if (typeof msg.success !== "undefined") {
-                if (msg.success !== "true")
+                 if (msg.success !== "true")
                     var waitTill = new Date(new Date().getTime() + 5 * 1000);
                     while(waitTill > new Date()){}
                     this._log.warn("Unsuccessful message", msg);
@@ -102,11 +102,6 @@ class OkCoinWebsocket {
                     this._log.info("Successfully connected to %s", msg.channel);
                 return;   
             }
-            if (typeof msg.order_id === "undefined") {
-                var waitTill = new Date(new Date().getTime() + 5 * 1000);
-                while(waitTill > new Date()){}
-                return;
-
             var handler = this._handlers[msg.channel];
 
             if (typeof handler === "undefined") {
