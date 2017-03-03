@@ -71,7 +71,7 @@ interface OkCoinTradeRecord {
 interface SubscriptionRequest extends SignedMessage { }
 
 class OkCoinWebsocket {
-  send = <T>(channel : string, parameters: any) => {
+	send = <T>(channel : string, parameters: any) => {
         var subsReq : any = {event: 'addChannel', channel: channel};
 
         if (parameters !== null)
@@ -93,15 +93,22 @@ class OkCoinWebsocket {
                 this._ws.send(this._serializedHeartbeat);
                 return;
             }
+
             if (typeof msg.success !== "undefined") {
-                 if (msg.success !== "true")
-                    this._log.warn("Unsuccessful message", msg);
-                    var waitTill = new Date(new Date().getTime() + 3 * 1000);
-                    while(waitTill > new Date()){}
-                    this._log.warn("waited")
-                else
-                    this._log.info("Successfully connected to %s", msg.channel);
-                return;   
+                if (msg.success !== "true" && (typeof msg.errorcode === "undefined" || (
+                  msg.errorcode != '10050' /* 10050=Can't cancel more than once */
+                  && msg.errorcode != '10009' /* 10009=Order does not exist */
+                  && msg.errorcode != '10010' /* 10010=Insufficient funds */
+                  && msg.errorcode != '10016' /* 10016=Insufficient coins balance */
+                  // msg.errorcode != '10001' /* 10001=Request frequency too high */
+                ))) this._log.warn("Unsuccessful message %s received.", raw);
+                else if (msg.success === "true")
+                  return this._log.info("Successfully connected to %s", msg.channel);
+                if (typeof msg.errorcode !== "undefined" && (
+                  msg.errorcode == '10050'
+                  || msg.errorcode == '10009'
+                  // || msg.errorcode == '10001'
+                ))  return;
             }
 
             var handler = this._handlers[msg.channel];
@@ -114,8 +121,7 @@ class OkCoinWebsocket {
             handler(new Models.Timestamped(msg.data, t));
         }
         catch (e) {
-            this._log.error(e, "Error parsing msg %o", raw);
-            throw e;
+            this._log.error(e, "Error parsing msg", raw);
         }
     };
 
@@ -257,8 +263,8 @@ class OkCoinOrderEntryGateway implements Interfaces.IOrderEntryGateway {
 
         if (ts.data.result === "true") {
             osr.orderStatus = Models.OrderStatus.Cancelled;
-            osr.done = true;
             osr.leavesQuantity = 0;
+            osr.done = true;
         }
         else {
             osr.orderStatus = Models.OrderStatus.Rejected;
