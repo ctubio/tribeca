@@ -127,7 +127,6 @@ class OkCoinWebsocket {
         }
         catch (e) {
             this._log.error(e, "Error parsing msg", raw);
-            throw e;
         }
     };
 
