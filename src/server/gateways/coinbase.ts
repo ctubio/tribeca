@@ -575,7 +575,8 @@ class CoinbaseOrderEntryGateway implements Interfaces.IOrderEntryGateway {
                     exchangeId: ack.id,		
                     orderId: order.orderId,		
                     orderStatus: Models.OrderStatus.Working,		
-                    time: t		
+                    time: t
+                    ,done: true
                 };		
             }		
  	
